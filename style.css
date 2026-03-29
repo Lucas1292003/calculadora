@@ -24,7 +24,6 @@ body {
 
 .container { display: flex; width: 100%; height: 100%; position: relative; }
 
-/* --- LOGO FIJO --- */
 .logo-fixed {
     position: fixed;
     top: 2rem;
@@ -46,7 +45,6 @@ body {
 }
 .logo-fixed:hover { transform: scale(1.1); }
 
-/* --- SIDEBAR --- */
 .sidebar {
     width: var(--sidebar-width);
     background: #1e293b;
@@ -91,7 +89,6 @@ body {
 .nav-item:hover { background: #334155; color: white; }
 .nav-item.active { background: var(--primary); color: white; }
 
-/* --- CONTENIDO PRINCIPAL --- */
 .main-content {
     margin-left: 1rem;
     flex: 1;
@@ -105,7 +102,6 @@ body {
 .header-text h1 { font-size: 1.5rem; font-weight: 600; }
 .header-text p { color: var(--text-muted); font-size: 0.95rem; }
 
-/* --- DASHBOARD --- */
 .welcome-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -131,7 +127,6 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- ICONOS FLOTANTES (NUEVO) --- */
 .floating-icon {
     position: fixed;
     width: 50px;
@@ -152,7 +147,6 @@ body {
 .top-right { top: 20px; right: 20px; }
 .bottom-right { bottom: 20px; right: 20px; }
 
-/* --- MODAL Y CALCULADORA (NUEVO) --- */
 .modal {
     position: fixed;
     top: 0; 
@@ -227,13 +221,14 @@ body {
 .calc-buttons .op { background: #f1f5f9; font-weight: bold; }
 .calc-buttons .eq { background: var(--primary); color: white; border: none; }
 .calc-buttons .eq:hover { background: var(--primary-hover); }
-/* --- RESPONSIVE: MÓVILES --- */
+
+
 @media (max-width: 768px) {
     .sidebar {
         width: 0;
         padding: 0;
         opacity: 0;
-        position: fixed; /* Para que no empuje el contenido al abrirse */
+        position: fixed;
         top: 0;
         left: 0;
         z-index: 1000;
@@ -241,23 +236,22 @@ body {
         transition: all 0.3s ease;
     }
 
-    /* Cuando se activa la sidebar en móvil, queremos que flote sobre el contenido */
     .sidebar.active-mobile {
         width: var(--sidebar-width);
         padding: 2rem 1.5rem;
         opacity: 1;
     }
     .main-content {
-        padding: 2rem 1rem 2rem 5.5rem; /* Ajustamos espacio para el logo Σ */
+        padding: 2rem 1rem 2rem 5.5rem;
     }
 
     .modal-content {
-        width: 90%; /* La calculadora ocupa casi todo el ancho en móvil */
+        width: 90%;
         min-height: auto;
     }
     
     .calc-buttons button {
-        padding: 15px; /* Botones un poco más pequeños para pantallas chicas */
+        padding: 15px;
     }
 }
 .calc-buttons { grid-template-columns: repeat(4, 1fr); }
@@ -270,7 +264,6 @@ body {
  
 .calc-buttons .cls { background: #1e293b; color: white; font-weight: bold; }
 .calc-buttons .cls:hover { background: #334155; }
-/* Pegá esto al final de tu style.css */
 
 .calc-buttons .fn  { background: #ede9fe; color: #6d28d9; font-weight: 500; font-size: 0.95rem; }
 .calc-buttons .fn:hover { background: #ddd6fe; }
@@ -283,9 +276,7 @@ body {
 
 .calc-buttons .toggle-adv { background: #f1f5f9; color: var(--text-muted); font-weight: bold; font-size: 1.2rem; }
 .calc-buttons .toggle-adv:hover { background: #e2e8f0; color: var(--text-main); }
-/* ── Pegá esto al final de tu style.css ── */
 
-/* Botones calculadora avanzada */
 .calc-buttons .fn  { background: #ede9fe; color: #6d28d9; font-weight: 500; font-size: 0.95rem; }
 .calc-buttons .fn:hover { background: #ddd6fe; }
 .calc-buttons .del { background: #fee2e2; color: #dc2626; font-weight: bold; }
@@ -295,7 +286,6 @@ body {
 .calc-buttons .toggle-adv { background: #f1f5f9; color: var(--text-muted); font-weight: bold; font-size: 1.2rem; }
 .calc-buttons .toggle-adv:hover { background: #e2e8f0; color: var(--text-main); }
 
-/* ── Layout de métodos ── */
 .metodo-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -331,7 +321,6 @@ body {
 
 .card-body { padding: 1.25rem; flex: 1; }
 
-/* Inputs */
 .form-group {
     display: flex;
     flex-direction: column;
@@ -382,7 +371,6 @@ body {
 
 .btn-calcular:hover { background: var(--primary-hover); }
 
-/* Resultado */
 .resultado-destacado {
     text-align: center;
     padding: 1.5rem 0;
@@ -410,13 +398,11 @@ body {
     margin-top: 1rem;
 }
 
-/* Gráfico */
 .grafico-body {
     position: relative;
     min-height: 280px;
 }
 
-/* Tabla */
 .tabla-wrapper { overflow-x: auto; }
 
 table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
@@ -426,11 +412,9 @@ th { font-weight: 600; color: var(--text-muted); font-size: 0.8rem; text-transfo
 tbody tr:hover { background: #f8fafc; }
 tbody tr:last-child td { border-bottom: none; }
 
-/* Placeholders y errores */
 .placeholder { color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 2rem 0; }
 .error { color: #dc2626; font-size: 0.9rem; font-weight: 500; }
 
-/* Responsive */
 @media (max-width: 768px) {
     .metodo-grid { grid-template-columns: 1fr; }
     .inputs-card, .resultado-card, .grafico-card, .tabla-card {
