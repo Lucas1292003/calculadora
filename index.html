@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="logo-fixed" id="main-logo">Σ</div>
+
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">
+                <span id="brand-name" style="margin-left: 4rem; margin-top: 1rem;">Calculadora</span>
+            </div>
+            <nav class="nav-menu"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="header-text">
+                    <h1 id="view-title">Bienvenido</h1>
+                    <p id="view-description">Selecciona un método para comenzar.</p>
+                </div>
+            </header>
+            <div id="app-content"></div>
+        </main>
+    </div>
+
+    <div id="go-home" class="floating-icon top-right" title="Ir al Dashboard">🏠</div>
+    <div id="open-calc" class="floating-icon bottom-right" title="Abrir Calculadora">🔢</div>
+
+    <!-- El modal de la calculadora se genera dinámicamente desde calculadora.js -->
+
+    <!-- math.js: evaluación segura de expresiones matemáticas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/13.2.0/math.min.js"></script>
+    <script type="module" src="./js/main.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</body>
+</html>
