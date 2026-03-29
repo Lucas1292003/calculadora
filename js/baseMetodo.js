@@ -1,14 +1,3 @@
-// ─────────────────────────────────────────────
-//  baseMetodo.js  –  Layout y utilidades base
-//  Todos los métodos usan renderLayout() y
-//  graficarFuncion() desde acá.
-// ─────────────────────────────────────────────
-
-/**
- * Genera el HTML del layout en grilla para cualquier método.
- * @param {string} idPrefix  - prefijo único del método (ej: 'bis')
- * @param {string} inputsHTML - HTML interno de la tarjeta de inputs
- */
 export function renderLayout(idPrefix, inputsHTML) {
     return `
         <div class="metodo-grid">
@@ -51,15 +40,6 @@ export function renderLayout(idPrefix, inputsHTML) {
     `;
 }
 
-/**
- * Dibuja la función en el canvas usando Chart.js.
- * @param {string} canvasId   - id del canvas
- * @param {string} placeholderId - id del placeholder a ocultar
- * @param {Function} f        - función evaluada f(x)
- * @param {number} xMin       - inicio del eje x
- * @param {number} xMax       - fin del eje x
- * @param {number|null} raiz  - valor de la raíz para marcarla (opcional)
- */
 export function graficarFuncion(canvasId, placeholderId, f, xMin, xMax, raiz = null) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
@@ -129,12 +109,6 @@ export function graficarFuncion(canvasId, placeholderId, f, xMin, xMax, raiz = n
     });
 }
 
-/**
- * Renderiza el resultado destacado.
- * @param {string} idPrefix
- * @param {number} raiz
- * @param {number} iteraciones
- */
 export function mostrarResultado(idPrefix, raiz, iteraciones) {
     document.getElementById(`${idPrefix}-resultado`).innerHTML = `
         <div class="resultado-destacado">
