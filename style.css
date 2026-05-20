@@ -422,3 +422,177 @@ tbody tr:last-child td { border-bottom: none; }
         grid-row: auto;
     }
 }
+
+/* ═══════════════════════════════════════════════
+   HISTORIAL 
+   ═══════════════════════════════════════════════ */
+ 
+/* ── Card footer con botón guardar ─────────── */
+.card-footer {
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid var(--border);
+    background: #f8fafc;
+}
+ 
+.btn-guardar {
+    width: 100%;
+    padding: 10px;
+    background: #10b981;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, opacity 0.2s;
+}
+.btn-guardar:hover:not(:disabled) { background: #059669; }
+.btn-guardar:disabled { opacity: 0.45; cursor: not-allowed; }
+ 
+/* ── Overlay oscuro ─────────────────────────── */
+.hist-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(2px);
+    z-index: 1800;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+.hist-overlay.open { opacity: 1; visibility: visible; }
+ 
+/* ── Panel lateral deslizable ───────────────── */
+.hist-panel {
+    position: fixed;
+    top: 0; right: 0;
+    width: 360px;
+    height: 100%;
+    background: var(--bg-card);
+    border-left: 1px solid var(--border);
+    box-shadow: -8px 0 30px rgba(0,0,0,0.12);
+    z-index: 1900;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.hist-panel.open { transform: translateX(0); }
+ 
+.hist-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.25rem 1rem;
+    font-weight: 600;
+    font-size: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+ 
+.hist-close-btn {
+    border: none; background: none;
+    font-size: 1.5rem; color: var(--text-muted);
+    cursor: pointer; line-height: 1;
+}
+.hist-close-btn:hover { color: var(--text-main); }
+ 
+.hist-toolbar {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+}
+ 
+.hist-btn {
+    padding: 7px 14px;
+    border: none; border-radius: 8px;
+    font-size: 0.85rem; font-weight: 600;
+    cursor: pointer; transition: background 0.2s;
+}
+.hist-btn-secondary { background: #f1f5f9; color: var(--text-main); flex: 1; }
+.hist-btn-secondary:hover { background: #e2e8f0; }
+.hist-btn-danger { background: #fee2e2; color: #dc2626; }
+.hist-btn-danger:hover { background: #fecaca; }
+ 
+/* ── Lista de ítems ─────────────────────────── */
+.hist-lista {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+ 
+.hist-empty {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    padding: 3rem 1rem;
+}
+ 
+.hist-item {
+    background: var(--bg-main);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.9rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+ 
+.hist-item-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+ 
+.hist-badge {
+    font-size: 0.78rem;
+    font-weight: 700;
+    background: #dbeafe;
+    color: var(--primary);
+    padding: 2px 10px;
+    border-radius: 999px;
+}
+ 
+.hist-dl-btn {
+    border: none;
+    background: #f1f5f9;
+    color: var(--text-muted);
+    border-radius: 6px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background 0.2s;
+}
+.hist-dl-btn:hover { background: #e2e8f0; color: var(--text-main); }
+ 
+.hist-item-result {
+    font-size: 0.9rem;
+    color: var(--text-main);
+}
+.hist-iter-badge {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-left: 0.5rem;
+}
+ 
+.hist-item-inputs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 0.75rem;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+ 
+.hist-fecha {
+    font-size: 0.73rem;
+    color: #94a3b8;
+    margin-top: 0.2rem;
+}
+ 
+/* ── Responsive ─────────────────────────────── */
+@media (max-width: 768px) {
+    .hist-panel { width: 100%; }
+}
