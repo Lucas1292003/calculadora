@@ -3,6 +3,8 @@ import { regulaFalsi } from './regulaFalsi.js';
 import { puntoFijo }   from './puntoFijo.js';
 import { newton }      from './newton.js';
 import { secante }     from './secante.js';
+import { metodoEDO } from './edo.js';
+
 
 export const LISTA_METODOS = [
     biseccion,
@@ -10,4 +12,5 @@ export const LISTA_METODOS = [
     puntoFijo,
     newton,
     secante,
+    metodoEDO   
 ];
