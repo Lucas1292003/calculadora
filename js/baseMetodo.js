@@ -1,7 +1,9 @@
+import { addEntrada } from './historial.js';
+ 
 export function renderLayout(idPrefix, inputsHTML) {
     return `
         <div class="metodo-grid">
-
+ 
             <!-- Tarjeta: Inputs -->
             <div class="metodo-card inputs-card">
                 <div class="card-header">⚙️ Parámetros</div>
@@ -10,15 +12,20 @@ export function renderLayout(idPrefix, inputsHTML) {
                     <button id="${idPrefix}-btn" class="btn-calcular">Calcular</button>
                 </div>
             </div>
-
+ 
             <!-- Tarjeta: Resultado -->
             <div class="metodo-card resultado-card">
                 <div class="card-header">🎯 Resultado</div>
                 <div class="card-body" id="${idPrefix}-resultado">
                     <p class="placeholder">Ingresá los parámetros y presioná Calcular.</p>
                 </div>
+                <div class="card-footer">
+                    <button id="${idPrefix}-save-btn" class="btn-guardar" disabled>
+                        💾 Guardar resultado
+                    </button>
+                </div>
             </div>
-
+ 
             <!-- Tarjeta: Gráfico -->
             <div class="metodo-card grafico-card">
                 <div class="card-header">📈 Gráfico</div>
@@ -27,7 +34,7 @@ export function renderLayout(idPrefix, inputsHTML) {
                     <p class="placeholder" id="${idPrefix}-chart-placeholder">El gráfico aparecerá luego de calcular.</p>
                 </div>
             </div>
-
+ 
             <!-- Tarjeta: Iteraciones -->
             <div class="metodo-card tabla-card">
                 <div class="card-header">🔁 Iteraciones</div>
@@ -35,31 +42,31 @@ export function renderLayout(idPrefix, inputsHTML) {
                     <p class="placeholder">La tabla aparecerá luego de calcular.</p>
                 </div>
             </div>
-
+ 
         </div>
     `;
 }
-
+ 
 export function graficarFuncion(canvasId, placeholderId, f, xMin, xMax, raiz = null) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
-
+ 
     document.getElementById(placeholderId).style.display = 'none';
-
+ 
     // Destruir gráfico anterior si existe
     if (canvas._chartInstance) canvas._chartInstance.destroy();
-
+ 
     const puntos = 200;
     const paso   = (xMax - xMin) / puntos;
     const labels = [];
     const data   = [];
-
+ 
     for (let i = 0; i <= puntos; i++) {
         const x = xMin + i * paso;
         labels.push(x.toFixed(3));
         try { data.push(f(x)); } catch { data.push(null); }
     }
-
+ 
     const datasets = [
         {
             label: 'f(x)',
@@ -71,7 +78,7 @@ export function graficarFuncion(canvasId, placeholderId, f, xMin, xMax, raiz = n
             fill: false,
         }
     ];
-
+ 
     // Marcar la raíz si existe
     if (raiz !== null) {
         datasets.push({
@@ -84,7 +91,7 @@ export function graficarFuncion(canvasId, placeholderId, f, xMin, xMax, raiz = n
             showLine: false,
         });
     }
-
+ 
     canvas._chartInstance = new Chart(canvas, {
         type: 'line',
         data: { labels, datasets },
@@ -108,8 +115,9 @@ export function graficarFuncion(canvasId, placeholderId, f, xMin, xMax, raiz = n
         }
     });
 }
-
+ 
 export function mostrarResultado(idPrefix, raiz, iteraciones) {
+    // ── Renderizar resultado ──────────────────
     document.getElementById(`${idPrefix}-resultado`).innerHTML = `
         <div class="resultado-destacado">
             <div class="resultado-valor">${raiz.toFixed(8)}</div>
@@ -119,7 +127,49 @@ export function mostrarResultado(idPrefix, raiz, iteraciones) {
             <span>🔁 ${iteraciones} iteraciones</span>
         </div>
     `;
+ 
+    // ── Activar botón Guardar ─────────────────
+    const saveBtn = document.getElementById(`${idPrefix}-save-btn`);
+    if (!saveBtn) return;
+ 
+    saveBtn.disabled    = false;
+    saveBtn.textContent = '💾 Guardar resultado';
+ 
+    // Reemplazar handler anterior (evita duplicados si se calcula varias veces)
+    saveBtn.replaceWith(saveBtn.cloneNode(true));
+    const freshBtn = document.getElementById(`${idPrefix}-save-btn`);
+ 
+    freshBtn.addEventListener('click', () => {
+        // Recolectar inputs desde el DOM del card de parámetros
+        const inputs = {};
+        document.querySelectorAll('.inputs-card .form-group').forEach(group => {
+            const label = group.querySelector('label')?.textContent?.trim().replace(/\s+/g, ' ');
+            const input = group.querySelector('input');
+            if (label && input) {
+                inputs[label] = input.value.trim() || input.placeholder;
+            }
+        });
+ 
+        const metodo = document.getElementById('view-title')?.innerText || 'Método desconocido';
+ 
+        addEntrada({
+            metodo,
+            inputs,
+            raiz:        raiz.toFixed(8),
+            iteraciones,
+        });
+ 
+        freshBtn.textContent = '✅ Guardado';
+        freshBtn.disabled    = true;
+ 
+        // Restaurar el botón después de un momento
+        setTimeout(() => {
+            freshBtn.textContent = '💾 Guardar resultado';
+            freshBtn.disabled    = false;
+        }, 2500);
+    });
 }
+ 
 export function getVal(){
     document.getElementById(`${idPrefix}-resultado`).innerHTML = `
         <div class="resultado-destacado">
