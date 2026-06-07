@@ -1,4 +1,5 @@
 import { renderLayout } from '../baseMetodo.js';
+import { addEntrada } from '../historial.js';
 
 // ── Lógica Matemática ──
 function calcularEDO(metodo, f, x0, y0, h, pasos) {
@@ -33,26 +34,40 @@ export const metodoEDO = {
     descripcion: 'Resolución paso a paso mediante Euler, RK2 (Heun) y RK4.',
     icon: '📉',
     
-    // Inyecta los inputs en el layout base de baseMetodo.js
+    // Inyecta los inputs usando el sistema de grillas global de style.css
     renderHTML: () => {
         const inputsHTML = `
-            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
-                <label>Función f(x,y): <input type="text" id="edo-f" value="x - y" style="width:100%"></label>
-                <div style="display: flex; gap: 10px;">
-                    <label>x₀: <input type="number" id="edo-x0" step="any" value="0" style="width:100%"></label>
-                    <label>y₀: <input type="number" id="edo-y0" step="any" value="1" style="width:100%"></label>
+            <div class="form-group">
+                <label>Función f(x,y)</label>
+                <input type="text" id="edo-f" value="x - y" placeholder="x - y" />
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>x₀ (Valor inicial)</label>
+                    <input type="number" id="edo-x0" step="any" value="0" />
                 </div>
-                <div style="display: flex; gap: 10px;">
-                    <label>Paso (h): <input type="number" id="edo-h" step="any" value="0.1" style="width:100%"></label>
-                    <label>Pasos (n): <input type="number" id="edo-n" value="10" style="width:100%"></label>
+                <div class="form-group">
+                    <label>y₀ (Valor inicial)</label>
+                    <input type="number" id="edo-y0" step="any" value="1" />
                 </div>
-                <label>Método:
-                    <select id="edo-tipo" style="width:100%">
-                        <option value="euler">Euler</option>
-                        <option value="rk2">Runge-Kutta 2 (Heun)</option>
-                        <option value="rk4">Runge-Kutta 4</option>
-                    </select>
-                </label>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Paso (h)</label>
+                    <input type="number" id="edo-h" step="any" value="0.1" />
+                </div>
+                <div class="form-group">
+                    <label>Pasos (n)</label>
+                    <input type="number" id="edo-n" value="10" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Método</label>
+                <select id="edo-tipo" style="padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; background: var(--bg-main); color: var(--text-main); outline: none;">
+                    <option value="euler">Euler</option>
+                    <option value="rk2">Runge-Kutta 2 (Heun)</option>
+                    <option value="rk4">Runge-Kutta 4</option>
+                </select>
             </div>
         `;
         return renderLayout('edo', inputsHTML);
@@ -70,7 +85,7 @@ export const metodoEDO = {
             const tipo = document.getElementById('edo-tipo').value;
 
             try {
-                // Compilamos la función usando math.js para mayor seguridad y velocidad
+                // Compilamos la función usando math.js
                 const nodo = math.compile(funcStr);
                 const f = (x, y) => nodo.evaluate({ x, y });
 
@@ -81,24 +96,77 @@ export const metodoEDO = {
                 const ultimoPunto = historial[historial.length - 1];
                 document.getElementById('edo-resultado').innerHTML = `
                     <div class="resultado-destacado">
-                        <div class="resultado-valor">y = ${ultimoPunto.y}</div>
+                        <div class="resultado-valor">y = ${ultimoPunto.y.toFixed(6)}</div>
                         <div class="resultado-label">En x = ${ultimoPunto.x}</div>
+                    </div>
+                    <div class="resultado-meta">
+                        <span>🔁 ${pasos} pasos ejecutados</span>
                     </div>
                 `;
 
-                // Renderizamos la tabla
-                let htmlTabla = `<table style="width:100%; text-align:left; border-collapse: collapse;">
-                    <tr style="border-bottom: 1px solid #ccc;">
-                        <th>Paso</th><th>x</th><th>y</th>
-                    </tr>`;
-                historial.forEach(p => {
-                    htmlTabla += `<tr><td>${p.paso}</td><td>${p.x}</td><td>${p.y}</td></tr>`;
-                });
-                htmlTabla += `</table>`;
-                document.getElementById('edo-tabla').innerHTML = htmlTabla;
+                // Renderizamos la tabla usando el wrapper responsivo y semántica estándar
+                document.getElementById('edo-tabla').innerHTML = `
+                    <div class="tabla-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Paso</th>
+                                    <th>x</th>
+                                    <th>y</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${historial.map(p => `
+                                    <tr>
+                                        <td>${p.paso}</td>
+                                        <td>${p.x.toFixed(6)}</td>
+                                        <td>${p.y.toFixed(6)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
 
                 // Generamos el gráfico usando Chart.js
                 graficarEDO(historial);
+
+                // Activar e integrar el botón "Guardar resultado" en el historial global
+                const saveBtn = document.getElementById('edo-save-btn');
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = '💾 Guardar resultado';
+                    
+                    // Clonar para limpiar event listeners previos y evitar duplicados
+                    saveBtn.replaceWith(saveBtn.cloneNode(true));
+                    const freshBtn = document.getElementById('edo-save-btn');
+                    
+                    freshBtn.addEventListener('click', () => {
+                        const inputs = {
+                            "Función f(x,y)": funcStr,
+                            "x₀": x0,
+                            "y₀": y0,
+                            "Paso (h)": h,
+                            "Pasos (n)": pasos,
+                            "Método": tipo.toUpperCase()
+                        };
+
+                        addEntrada({
+                            metodo: 'Ecuaciones Diferenciales',
+                            inputs,
+                            raiz: `y(${ultimoPunto.x}) = ${ultimoPunto.y.toFixed(6)}`,
+                            iteraciones: pasos
+                        });
+
+                        freshBtn.textContent = '✅ Guardado';
+                        freshBtn.disabled = true;
+
+                        setTimeout(() => {
+                            freshBtn.textContent = '💾 Guardar resultado';
+                            freshBtn.disabled = false;
+                        }, 2500);
+                    });
+                }
 
             } catch (error) {
                 alert("Error al procesar la función matemática. Verificá la sintaxis.");
