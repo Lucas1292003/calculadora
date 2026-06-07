@@ -4,16 +4,17 @@ export function renderLayout(idPrefix, inputsHTML) {
     return `
         <div class="metodo-grid">
  
-            <!-- Tarjeta: Inputs -->
             <div class="metodo-card inputs-card">
                 <div class="card-header">⚙️ Parámetros</div>
                 <div class="card-body">
                     ${inputsHTML}
+                    
+                    <div id="${idPrefix}-preview-container" style="margin: 15px 0; padding: 12px; background: var(--bg-main); border: 1px solid var(--border); border-radius: 8px; display: none; flex-direction: column; gap: 8px; text-align: center;"></div>
+                    
                     <button id="${idPrefix}-btn" class="btn-calcular">Calcular</button>
                 </div>
             </div>
  
-            <!-- Tarjeta: Resultado -->
             <div class="metodo-card resultado-card">
                 <div class="card-header">🎯 Resultado</div>
                 <div class="card-body" id="${idPrefix}-resultado">
@@ -26,7 +27,6 @@ export function renderLayout(idPrefix, inputsHTML) {
                 </div>
             </div>
  
-            <!-- Tarjeta: Gráfico -->
             <div class="metodo-card grafico-card">
                 <div class="card-header">📈 Gráfico</div>
                 <div class="card-body grafico-body">
@@ -35,7 +35,6 @@ export function renderLayout(idPrefix, inputsHTML) {
                 </div>
             </div>
  
-            <!-- Tarjeta: Iteraciones -->
             <div class="metodo-card tabla-card">
                 <div class="card-header">🔁 Iteraciones</div>
                 <div class="card-body" id="${idPrefix}-tabla">
@@ -46,7 +45,7 @@ export function renderLayout(idPrefix, inputsHTML) {
         </div>
     `;
 }
- 
+
 export function graficarFuncion(canvasId, placeholderId, f, xMin, xMax, raiz = null) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
