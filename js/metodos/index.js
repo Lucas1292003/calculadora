@@ -3,14 +3,22 @@ import { regulaFalsi } from './regulaFalsi.js';
 import { puntoFijo }   from './puntoFijo.js';
 import { newton }      from './newton.js';
 import { secante }     from './secante.js';
-import { metodoEDO } from './edo.js';
 
+// ── Métodos de integración  ──────────
+import { trapecio }   from './trapecio.js';
+import { simpson13 }  from './simpson13.js';
+import { simpson38 }  from './simpson38.js';
 
 export const LISTA_METODOS = [
+    // Búsqueda de raíces
     biseccion,
     regulaFalsi,
     puntoFijo,
     newton,
     secante,
-    metodoEDO   
+
+    // Integración numérica
+    trapecio,
+    simpson13,
+    simpson38,
 ];
