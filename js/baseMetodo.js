@@ -9,6 +9,8 @@ export function renderLayout(idPrefix, inputsHTML) {
                 <div class="card-header">⚙️ Parámetros</div>
                 <div class="card-body">
                     ${inputsHTML}
+                    <!-- Preview KaTeX: se muestra automáticamente al escribir -->
+                    <div id="${idPrefix}-preview-container" class="preview-container"></div>
                     <button id="${idPrefix}-btn" class="btn-calcular">Calcular</button>
                 </div>
             </div>
@@ -52,7 +54,6 @@ export function graficarFuncion(canvasId, placeholderId, f, xMin, xMax, raiz = n
     if (!canvas) return;
 
     document.getElementById(placeholderId).style.display = 'none';
-
     if (canvas._chartInstance) canvas._chartInstance.destroy();
 
     const puntos = 200;
@@ -66,27 +67,18 @@ export function graficarFuncion(canvasId, placeholderId, f, xMin, xMax, raiz = n
         try { data.push(f(x)); } catch { data.push(null); }
     }
 
-    const datasets = [
-        {
-            label: 'f(x)',
-            data,
-            borderColor: '#2563eb',
-            borderWidth: 2,
-            pointRadius: 0,
-            tension: 0.3,
-            fill: false,
-        }
-    ];
+    const datasets = [{
+        label: 'f(x)', data,
+        borderColor: '#2563eb', borderWidth: 2,
+        pointRadius: 0, tension: 0.3, fill: false,
+    }];
 
     if (raiz !== null) {
         datasets.push({
             label: 'Raíz',
             data: labels.map(l => Math.abs(parseFloat(l) - raiz) < paso ? 0 : null),
-            borderColor: '#dc2626',
-            backgroundColor: '#dc2626',
-            pointRadius: 6,
-            pointStyle: 'circle',
-            showLine: false,
+            borderColor: '#dc2626', backgroundColor: '#dc2626',
+            pointRadius: 6, pointStyle: 'circle', showLine: false,
         });
     }
 
@@ -94,12 +86,8 @@ export function graficarFuncion(canvasId, placeholderId, f, xMin, xMax, raiz = n
         type: 'line',
         data: { labels, datasets },
         options: {
-            responsive: true,
-            animation: { duration: 500 },
-            plugins: {
-                legend: { position: 'top' },
-                tooltip: { mode: 'index', intersect: false }
-            },
+            responsive: true, animation: { duration: 500 },
+            plugins: { legend: { position: 'top' }, tooltip: { mode: 'index', intersect: false } },
             scales: {
                 x: { ticks: { maxTicksLimit: 8 }, grid: { color: '#e2e8f0' } },
                 y: { grid: { color: '#e2e8f0' }, ticks: { maxTicksLimit: 6 } }
@@ -118,33 +106,7 @@ export function mostrarResultado(idPrefix, raiz, iteraciones) {
             <span>🔁 ${iteraciones} iteraciones</span>
         </div>
     `;
-
-    const saveBtn = document.getElementById(`${idPrefix}-save-btn`);
-    if (!saveBtn) return;
-
-    saveBtn.disabled    = false;
-    saveBtn.textContent = '💾 Guardar resultado';
-    saveBtn.replaceWith(saveBtn.cloneNode(true));
-    const freshBtn = document.getElementById(`${idPrefix}-save-btn`);
-
-    freshBtn.addEventListener('click', () => {
-        const inputs = {};
-        document.querySelectorAll('.inputs-card .form-group').forEach(group => {
-            const label = group.querySelector('label')?.textContent?.trim().replace(/\s+/g, ' ');
-            const input = group.querySelector('input');
-            if (label && input) inputs[label] = input.value.trim() || input.placeholder;
-        });
-
-        const metodo = document.getElementById('view-title')?.innerText || 'Método desconocido';
-        addEntrada({ metodo, inputs, raiz: raiz.toFixed(8), iteraciones });
-
-        freshBtn.textContent = '✅ Guardado';
-        freshBtn.disabled    = true;
-        setTimeout(() => {
-            freshBtn.textContent = '💾 Guardar resultado';
-            freshBtn.disabled    = false;
-        }, 2500);
-    });
+    _activarGuardar(idPrefix, raiz.toFixed(8), iteraciones);
 }
 
 // ─── Integración ──────────────────────────────
@@ -160,7 +122,55 @@ export function mostrarResultadoIntegracion(idPrefix, integral, n, h) {
             <span style="margin-left:1rem">h = ${h.toFixed(6)}</span>
         </div>
     `;
+    _activarGuardar(idPrefix, integral.toFixed(8), n);
+}
 
+export function graficarIntegracion(canvasId, placeholderId, f, a, b, n) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    document.getElementById(placeholderId).style.display = 'none';
+    if (canvas._chartInstance) canvas._chartInstance.destroy();
+
+    const puntos = 300;
+    const margen = Math.max((b - a) * 0.2, 0.5);
+    const paso   = (a - margen + b + margen) / puntos;
+    const xMin   = a - margen;
+    const xMax   = b + margen;
+    const p      = (xMax - xMin) / puntos;
+
+    const labels = [], curvaData = [], areaData = [];
+
+    for (let i = 0; i <= puntos; i++) {
+        const x = xMin + i * p;
+        labels.push(x.toFixed(4));
+        let y; try { y = f(x); } catch { y = null; }
+        curvaData.push(y);
+        areaData.push(x >= a - 1e-9 && x <= b + 1e-9 ? y : null);
+    }
+
+    canvas._chartInstance = new Chart(canvas, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [
+                { label: 'Área ∫f(x)dx', data: areaData, borderColor: 'transparent', backgroundColor: 'rgba(37,99,235,0.12)', fill: 'origin', pointRadius: 0, tension: 0.3 },
+                { label: 'f(x)', data: curvaData, borderColor: '#2563eb', borderWidth: 2.5, pointRadius: 0, tension: 0.3, fill: false },
+            ]
+        },
+        options: {
+            responsive: true, animation: { duration: 400 },
+            plugins: { legend: { position: 'top' }, tooltip: { mode: 'index', intersect: false } },
+            scales: {
+                x: { ticks: { maxTicksLimit: 8 }, grid: { color: '#e2e8f0' } },
+                y: { grid: { color: '#e2e8f0' }, ticks: { maxTicksLimit: 6 } }
+            }
+        }
+    });
+}
+
+// ─── Guardar (interno) ────────────────────────
+
+function _activarGuardar(idPrefix, valor, iteraciones) {
     const saveBtn = document.getElementById(`${idPrefix}-save-btn`);
     if (!saveBtn) return;
 
@@ -173,12 +183,12 @@ export function mostrarResultadoIntegracion(idPrefix, integral, n, h) {
         const inputs = {};
         document.querySelectorAll('.inputs-card .form-group').forEach(group => {
             const label = group.querySelector('label')?.textContent?.trim().replace(/\s+/g, ' ');
-            const input = group.querySelector('input');
-            if (label && input) inputs[label] = input.value.trim() || input.placeholder;
+            const el    = group.querySelector('input, select');
+            if (label && el) inputs[label] = el.value.trim() || el.placeholder || '';
         });
 
         const metodo = document.getElementById('view-title')?.innerText || 'Método desconocido';
-        addEntrada({ metodo, inputs, raiz: integral.toFixed(8), iteraciones: n });
+        addEntrada({ metodo, inputs, raiz: valor, iteraciones });
 
         freshBtn.textContent = '✅ Guardado';
         freshBtn.disabled    = true;
@@ -186,70 +196,5 @@ export function mostrarResultadoIntegracion(idPrefix, integral, n, h) {
             freshBtn.textContent = '💾 Guardar resultado';
             freshBtn.disabled    = false;
         }, 2500);
-    });
-}
-
-export function graficarIntegracion(canvasId, placeholderId, f, a, b, n) {
-    const canvas = document.getElementById(canvasId);
-    if (!canvas) return;
-    document.getElementById(placeholderId).style.display = 'none';
-    if (canvas._chartInstance) canvas._chartInstance.destroy();
-
-    const puntos = 300;
-    const margen = Math.max((b - a) * 0.2, 0.5);
-    const xMin   = a - margen;
-    const xMax   = b + margen;
-    const paso   = (xMax - xMin) / puntos;
-
-    const labels    = [];
-    const curvaData = [];
-    const areaData  = [];
-
-    for (let i = 0; i <= puntos; i++) {
-        const x = xMin + i * paso;
-        labels.push(x.toFixed(4));
-        let y;
-        try { y = f(x); } catch { y = null; }
-        curvaData.push(y);
-        areaData.push(x >= a - 1e-9 && x <= b + 1e-9 ? y : null);
-    }
-
-    canvas._chartInstance = new Chart(canvas, {
-        type: 'line',
-        data: {
-            labels,
-            datasets: [
-                {
-                    label: 'Área ∫f(x)dx',
-                    data: areaData,
-                    borderColor: 'transparent',
-                    backgroundColor: 'rgba(37, 99, 235, 0.12)',
-                    fill: 'origin',
-                    pointRadius: 0,
-                    tension: 0.3,
-                },
-                {
-                    label: 'f(x)',
-                    data: curvaData,
-                    borderColor: '#2563eb',
-                    borderWidth: 2.5,
-                    pointRadius: 0,
-                    tension: 0.3,
-                    fill: false,
-                },
-            ]
-        },
-        options: {
-            responsive: true,
-            animation: { duration: 400 },
-            plugins: {
-                legend: { position: 'top' },
-                tooltip: { mode: 'index', intersect: false }
-            },
-            scales: {
-                x: { ticks: { maxTicksLimit: 8 }, grid: { color: '#e2e8f0' } },
-                y: { grid: { color: '#e2e8f0' }, ticks: { maxTicksLimit: 6 } }
-            }
-        }
     });
 }

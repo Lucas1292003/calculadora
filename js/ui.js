@@ -1,27 +1,39 @@
-import { LISTA_METODOS } from './metodos/index.js';
+import { GRUPOS_METODOS } from './metodos/index.js';
 
 export const UI = {
-    // Genera las tarjetas del Dashboard automáticamente
+
+    // Dashboard con secciones por categoría
     renderDashboard: () => {
-        return `
-            <div class="welcome-grid">
-                ${LISTA_METODOS.map(metodo => `
-                    <div class="method-card" data-section="${metodo.id}">
-                        <div class="method-icon">${metodo.icon}</div>
-                        <h3>${metodo.titulo}</h3>
-                        <p>${metodo.descripcion}</p>
-                    </div>
-                `).join('')}
+        return GRUPOS_METODOS.map(grupo => `
+            <div class="dashboard-section">
+                <h2 class="dashboard-section-title">
+                    <span class="section-icon">${grupo.icon}</span>
+                    ${grupo.titulo}
+                </h2>
+                <div class="welcome-grid">
+                    ${grupo.metodos.map(m => `
+                        <div class="method-card" data-section="${m.id}">
+                            <div class="method-icon">${m.icon}</div>
+                            <h3>${m.titulo}</h3>
+                            <p>${m.descripcion}</p>
+                        </div>
+                    `).join('')}
+                </div>
             </div>
-        `;
+        `).join('');
     },
 
-    // Genera los botones del Menú lateral automáticamente
+    // Sidebar con encabezados de categoría
     renderSidebarMenu: () => {
-        return LISTA_METODOS.map(metodo => `
-            <button class="nav-item" data-section="${metodo.id}">
-                ${metodo.titulo}
-            </button>
+        return GRUPOS_METODOS.map(grupo => `
+            <div class="nav-group">
+                <div class="nav-group-title">${grupo.titulo}</div>
+                ${grupo.metodos.map(m => `
+                    <button class="nav-item" data-section="${m.id}">
+                        ${m.titulo}
+                    </button>
+                `).join('')}
+            </div>
         `).join('');
     }
 };

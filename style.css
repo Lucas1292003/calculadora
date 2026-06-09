@@ -615,3 +615,102 @@ tfoot td    { border-top: 2px solid var(--border); border-bottom: none; }
     .main-content { padding: 1.25rem 0.75rem 6rem 4rem; }
     .resultado-valor { font-size: 1.5rem; }
 }
+
+
+/* ─── Sidebar: grupos con título ──────────────── */
+.nav-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 1.25rem;
+}
+
+.nav-group-title {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #475569;
+    padding: 0 16px;
+    margin-bottom: 4px;
+}
+
+/* ─── Dashboard: secciones ────────────────────── */
+.dashboard-section { margin-bottom: 2rem; }
+
+.dashboard-section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-icon {
+    font-size: 1.1rem;
+}
+
+/* ─── KaTeX preview container ─────────────────── */
+.preview-container {
+    display: none;           /* el JS lo muestra con flex cuando hay contenido */
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--bg-main);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: background 0.3s;
+}
+
+/* ─── Derivada automática Newton ──────────────── */
+.auto-badge {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.68rem;
+    font-weight: 700;
+    background: #d1fae5;
+    color: #065f46;
+    padding: 2px 7px;
+    border-radius: 999px;
+    pointer-events: none;
+}
+
+[data-theme="dark"] .auto-badge {
+    background: #064e3b;
+    color: #6ee7b7;
+}
+
+.deriv-hint {
+    color: var(--text-muted);
+    font-size: 0.73rem;
+    margin-top: 3px;
+    display: none;
+}
+
+/* ─── Select estilizado (EDO) ─────────────────── */
+.form-select {
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: var(--input-bg);
+    color: var(--text-main);
+    width: 100%;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.3s, color 0.3s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: var(--primary);
+}
