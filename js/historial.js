@@ -1,7 +1,5 @@
 // ─────────────────────────────────────────────
 //  historial.js  –  Historial de cálculos
-//  Persiste en localStorage, exporta a .txt y .csv
-//  y renderiza el panel lateral deslizable.
 // ─────────────────────────────────────────────
 
 const KEY       = 'calc-historial-v1';
@@ -32,22 +30,28 @@ export function limpiarHistorial() {
 
 // ─── Exportar TXT ─────────────────────────────
 export function exportarEntrada(entrada) {
-    _descargar(`${entrada.metodo.replace(/\s+/g, '_')}_${entrada.id}.txt`, _formatearTxt(entrada));
+    _descargar(
+        `${entrada.metodo.replace(/\s+/g, '_')}_${entrada.id}.txt`,
+        _formatearTxt(entrada)
+    );
 }
 
 export function exportarTodo() {
     const lista = getHistorial();
     if (!lista.length) { alert('El historial está vacío.'); return; }
     const sep = '\n' + '═'.repeat(52) + '\n\n';
-    _descargar(`historial_calculadora_${Date.now()}.txt`, lista.map(_formatearTxt).join(sep));
+    _descargar(
+        `historial_calculadora_${Date.now()}.txt`,
+        lista.map(_formatearTxt).join(sep)
+    );
 }
 
 function _formatearTxt(e) {
     const line = '─'.repeat(44);
-    let t  = `MÉTODO : ${e.metodo}\n`;
+    let t  = `METODO : ${e.metodo}\n`;
         t += `FECHA  : ${e.fecha}\n`;
         t += line + '\n';
-        t += 'PARÁMETROS:\n';
+        t += 'PARAMETROS:\n';
     for (const [k, v] of Object.entries(e.inputs ?? {}))
         t += `  ${k}: ${v}\n`;
     t += line + '\n';
@@ -62,7 +66,9 @@ export function exportarCSV() {
     const lista = getHistorial();
     if (!lista.length) { alert('El historial está vacío.'); return; }
 
-    const filas = [['Método', 'Fecha', 'Resultado', 'Iteraciones / n', 'Parámetros']];
+    const filas = [
+        ['Metodo', 'Fecha', 'Resultado', 'Iteraciones / n', 'Parametros']
+    ];
 
     lista.forEach(e => {
         const params = Object.entries(e.inputs ?? {})
@@ -71,11 +77,24 @@ export function exportarCSV() {
         filas.push([e.metodo, e.fecha, e.raiz, e.iteraciones, params]);
     });
 
-    const csv = filas
-        .map(fila => fila.map(c => `"${String(c).replace(/"/g, '""')}"`).join(','))
-        .join('\n');
+    // Fixes para Excel en español (Argentina/España):
+    // 1. \uFEFF  = BOM UTF-8 → Excel reconoce el encoding y no garbleea tildes/ñ
+    // 2. sep=;   = le dice explícitamente a Excel que el separador es ";"
+    // 3. ";"     = separador punto y coma (en es-AR la coma es separador decimal)
+    // 4. \r\n    = salto de línea Windows para máxima compatibilidad
+    const SEP  = ';';
+    const CRLF = '\r\n';
+    const escapar = (c) => `"${String(c).replace(/"/g, '""')}"`;
 
-    _descargar(`historial_calculadora_${Date.now()}.csv`, csv, 'text/csv;charset=utf-8');
+    const csv = '\uFEFF'
+        + 'sep=;' + CRLF
+        + filas.map(fila => fila.map(escapar).join(SEP)).join(CRLF);
+
+    _descargar(
+        `historial_calculadora_${Date.now()}.csv`,
+        csv,
+        'text/csv;charset=utf-8'
+    );
 }
 
 // ─── Helper descarga ──────────────────────────
@@ -110,8 +129,8 @@ export function initHistorialPanel() {
             <button class="hist-close-btn" id="hist-close">&times;</button>
         </div>
         <div class="hist-toolbar">
-            <button class="hist-btn hist-btn-secondary" id="hist-export-txt" title="Exportar como .txt">⬇ TXT</button>
-            <button class="hist-btn hist-btn-secondary" id="hist-export-csv" title="Exportar como .csv (Excel)">⬇ CSV</button>
+            <button class="hist-btn hist-btn-secondary" id="hist-export-txt" title="Exportar todo como .txt">⬇ TXT</button>
+            <button class="hist-btn hist-btn-secondary" id="hist-export-csv" title="Exportar todo como .csv (Excel)">⬇ CSV</button>
             <button class="hist-btn hist-btn-danger"    id="hist-clear"      title="Limpiar historial">🗑</button>
         </div>
         <div id="hist-lista" class="hist-lista"></div>
