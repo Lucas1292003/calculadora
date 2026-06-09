@@ -53,7 +53,6 @@ export function graficarFuncion(canvasId, placeholderId, f, xMin, xMax, raiz = n
 
     document.getElementById(placeholderId).style.display = 'none';
 
-    // Destruir gráfico anterior si existe
     if (canvas._chartInstance) canvas._chartInstance.destroy();
 
     const puntos = 200;
@@ -79,7 +78,6 @@ export function graficarFuncion(canvasId, placeholderId, f, xMin, xMax, raiz = n
         }
     ];
 
-    // Marcar la raíz si existe
     if (raiz !== null) {
         datasets.push({
             label: 'Raíz',
@@ -103,21 +101,14 @@ export function graficarFuncion(canvasId, placeholderId, f, xMin, xMax, raiz = n
                 tooltip: { mode: 'index', intersect: false }
             },
             scales: {
-                x: {
-                    ticks: { maxTicksLimit: 8 },
-                    grid: { color: '#e2e8f0' }
-                },
-                y: {
-                    grid: { color: '#e2e8f0' },
-                    ticks: { maxTicksLimit: 6 }
-                }
+                x: { ticks: { maxTicksLimit: 8 }, grid: { color: '#e2e8f0' } },
+                y: { grid: { color: '#e2e8f0' }, ticks: { maxTicksLimit: 6 } }
             }
         }
     });
 }
 
 export function mostrarResultado(idPrefix, raiz, iteraciones) {
-    // ── Renderizar resultado ──────────────────
     document.getElementById(`${idPrefix}-resultado`).innerHTML = `
         <div class="resultado-destacado">
             <div class="resultado-valor">${raiz.toFixed(8)}</div>
@@ -128,41 +119,27 @@ export function mostrarResultado(idPrefix, raiz, iteraciones) {
         </div>
     `;
 
-    // ── Activar botón Guardar ─────────────────
     const saveBtn = document.getElementById(`${idPrefix}-save-btn`);
     if (!saveBtn) return;
 
     saveBtn.disabled    = false;
     saveBtn.textContent = '💾 Guardar resultado';
-
-    // Reemplazar handler anterior (evita duplicados si se calcula varias veces)
     saveBtn.replaceWith(saveBtn.cloneNode(true));
     const freshBtn = document.getElementById(`${idPrefix}-save-btn`);
 
     freshBtn.addEventListener('click', () => {
-        // Recolectar inputs desde el DOM del card de parámetros
         const inputs = {};
         document.querySelectorAll('.inputs-card .form-group').forEach(group => {
             const label = group.querySelector('label')?.textContent?.trim().replace(/\s+/g, ' ');
             const input = group.querySelector('input');
-            if (label && input) {
-                inputs[label] = input.value.trim() || input.placeholder;
-            }
+            if (label && input) inputs[label] = input.value.trim() || input.placeholder;
         });
 
         const metodo = document.getElementById('view-title')?.innerText || 'Método desconocido';
-
-        addEntrada({
-            metodo,
-            inputs,
-            raiz:        raiz.toFixed(8),
-            iteraciones,
-        });
+        addEntrada({ metodo, inputs, raiz: raiz.toFixed(8), iteraciones });
 
         freshBtn.textContent = '✅ Guardado';
         freshBtn.disabled    = true;
-
-        // Restaurar el botón después de un momento
         setTimeout(() => {
             freshBtn.textContent = '💾 Guardar resultado';
             freshBtn.disabled    = false;
@@ -170,11 +147,8 @@ export function mostrarResultado(idPrefix, raiz, iteraciones) {
     });
 }
 
-// ─────────────────────────────────────────────
-//  Funciones para métodos de INTEGRACIÓN
-// ─────────────────────────────────────────────
+// ─── Integración ──────────────────────────────
 
-// Muestra el resultado de una integración y activa el botón Guardar
 export function mostrarResultadoIntegracion(idPrefix, integral, n, h) {
     document.getElementById(`${idPrefix}-resultado`).innerHTML = `
         <div class="resultado-destacado">
@@ -215,7 +189,6 @@ export function mostrarResultadoIntegracion(idPrefix, integral, n, h) {
     });
 }
 
-// Gráfica la función con el área bajo la curva sombreada entre a y b
 export function graficarIntegracion(canvasId, placeholderId, f, a, b, n) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
@@ -228,9 +201,9 @@ export function graficarIntegracion(canvasId, placeholderId, f, a, b, n) {
     const xMax   = b + margen;
     const paso   = (xMax - xMin) / puntos;
 
-    const labels     = [];
-    const curvaData  = [];
-    const areaData   = [];
+    const labels    = [];
+    const curvaData = [];
+    const areaData  = [];
 
     for (let i = 0; i <= puntos; i++) {
         const x = xMin + i * paso;
@@ -238,20 +211,7 @@ export function graficarIntegracion(canvasId, placeholderId, f, a, b, n) {
         let y;
         try { y = f(x); } catch { y = null; }
         curvaData.push(y);
-        // Área sombreada solo entre a y b
         areaData.push(x >= a - 1e-9 && x <= b + 1e-9 ? y : null);
-    }
-
-    // Puntos de subdivisión (xᵢ)
-    const h = (b - a) / n;
-    const puntosSubdivLabel = [];
-    const puntosSubdivData  = [];
-    for (let i = 0; i <= n; i++) {
-        const xi  = a + i * h;
-        const lbl = xi.toFixed(4);
-        // Buscar el índice más cercano en labels
-        puntosSubdivLabel.push(lbl);
-        try { puntosSubdivData.push(f(xi)); } catch { puntosSubdivData.push(null); }
     }
 
     canvas._chartInstance = new Chart(canvas, {
@@ -292,16 +252,4 @@ export function graficarIntegracion(canvasId, placeholderId, f, a, b, n) {
             }
         }
     });
-}
-
-export function getVal(){
-    document.getElementById(`${idPrefix}-resultado`).innerHTML = `
-        <div class="resultado-destacado">
-            <div class="resultado-valor">${raiz.toFixed(8)}</div>
-            <div class="resultado-label">Raíz aproximada</div>
-        </div>
-        <div class="resultado-meta">
-            <span>🔁 ${iteraciones} iteraciones</span>
-        </div>
-    `;
 }
